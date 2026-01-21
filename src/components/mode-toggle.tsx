@@ -1,43 +1,49 @@
-import { Moon, Sun } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { useTheme } from "@/components/theme-provider";
 
 export function ModeToggle() {
-  const { setTheme } = useTheme();
+  const { mode, setMode, color, setColor } = useTheme();
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("voilet")}>
-          Voilet
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("rose")}>
-          Rose
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex flex-col gap-4 p-4 border rounded-lg">
+      {/* Option 1: Mode */}
+      <div>
+        <h4 className="text-sm font-medium mb-2">Appearance</h4>
+        <div className="flex gap-2">
+          {["light", "dark", "system"].map((m) => (
+            <Button
+              key={m}
+              variant={mode === m ? "default" : "outline"}
+              onClick={() => setMode(m as any)}
+            >
+              {m.charAt(0).toUpperCase() + m.slice(1)}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      {/* Option 2: Accent Color */}
+      <div>
+        <h4 className="text-sm font-medium mb-2">Accent Color</h4>
+        <div className="flex gap-2">
+          {/* Default (Slate/Zinc) */}
+          <button
+            onClick={() => setColor("default")}
+            className={`w-6 h-6 rounded-full bg-slate-900 border-2 ${color === "default" ? "border-blue-500" : "border-transparent"}`}
+          />
+          {/* Rose */}
+          <button
+            onClick={() => setColor("rose")}
+            className={`w-6 h-6 rounded-full bg-rose-500 border-2 ${color === "rose" ? "border-blue-500" : "border-transparent"}`}
+          />
+          {/* Violet - Changed bg class to match the name */}
+          <button
+            onClick={() => setColor("violet")}
+            className={`w-6 h-6 rounded-full bg-violet-500 border-2 ${color === "violet" ? "border-blue-500" : "border-transparent"}`}
+          />
+        </div>
+      </div>
+    </div>
   );
 }

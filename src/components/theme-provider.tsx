@@ -1,63 +1,50 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "dark" | "light" | "system" | "voilet" | "rose";
-
-type ThemeProviderProps = {
-  children: React.ReactNode;
-  defaultTheme?: Theme;
-  storageKey?: string;
-};
+type Mode = "light" | "dark" | "system";
+type Color = "default" | "rose" | "violet";
 
 type ThemeProviderState = {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
+  mode: Mode;
+  color: Color;
+  setMode: (mode: Mode) => void;
+  setColor: (color: Color) => void;
 };
 
 const initialState: ThemeProviderState = {
-  theme: "system",
-  setTheme: () => null,
+  mode: "light" as Mode,
+  color: "theme-default" as Color,
+  setMode: (mode: Mode) => {},
+  setColor: (color: Color) => {},
 };
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
-export function ThemeProvider({
-  children,
-  defaultTheme = "system",
-  storageKey = "vite-ui-theme",
-  ...props
-}: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
-  );
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [mode, setMode] = useState<Mode>("system");
+  const [color, setColor] = useState<Color>("default");
 
   useEffect(() => {
     const root = window.document.documentElement;
 
-    root.classList.remove("light", "dark", "voilet", "rose");
+    root.classList.remove("light", "dark", "violet", "rose");
 
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
+    let activeMode = mode;
+
+    if (mode === "system") {
+      activeMode = window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light";
-
-      root.classList.add(systemTheme);
-      return;
     }
 
-    root.classList.add(theme);
-  }, [theme]);
+    root.classList.add(activeMode);
 
-  const value = {
-    theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
-    },
-  };
+    if (color !== "default") {
+      root.classList.add(color);
+    }
+  }, [mode, color]);
 
   return (
-    <ThemeProviderContext.Provider {...props} value={value}>
+    <ThemeProviderContext.Provider value={{ mode, color, setMode, setColor }}>
       {children}
     </ThemeProviderContext.Provider>
   );
@@ -65,9 +52,7 @@ export function ThemeProvider({
 
 export const useTheme = () => {
   const context = useContext(ThemeProviderContext);
-
   if (context === undefined)
     throw new Error("useTheme must be used within a ThemeProvider");
-
-  return context;
+  return context; // This is the missing piece
 };
