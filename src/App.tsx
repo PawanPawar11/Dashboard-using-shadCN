@@ -1,13 +1,16 @@
 import { ThemeProvider } from "@/components/theme-provider"
 import { AppSidebar } from "./components/app-sidebar"
 import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar"
-import Navigation from "./components/navigation"
+import Navigation from "./components/Navigation"
+import Cookies from 'js-cookie'
 
 function App() {
+  const cookieValueOfSidebarState = Cookies.get('sidebar_state');
+  const defaultOpen = cookieValueOfSidebarState === 'true'
   return (
     <div className="min-h-screen">
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <SidebarProvider>
+        <SidebarProvider defaultOpen={defaultOpen}>
           <div className="flex">
             {/* Sidebar */}
             <AppSidebar />
@@ -16,7 +19,7 @@ function App() {
             <div className="p-2">
               <SidebarTrigger/>
             </div>
-
+            
             {/* Main content wrapper */}
             <div className="flex-1 flex flex-col pr-5">
               {/* Navigation Bar */}
